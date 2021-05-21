@@ -17,6 +17,7 @@
 //
 
 #include "datasettablemodel.h"
+#include "utilities/qutils.h"
 
 DataSetTableModel* DataSetTableModel::_singleton = nullptr;
 
@@ -49,4 +50,22 @@ void DataSetTableModel::setShowInactive(bool showInactive)
 bool DataSetTableModel::filterAcceptsRow(int source_row, const QModelIndex &)	const
 {
 	return _showInactive || DataSetPackage::pkg()->getRowFilter(source_row);
+}
+
+
+QString DataSetTableModel::columnName(int column) const
+{
+	//map to source might be needed here once we start filtering columns
+	return tq(getColumnName(column));
+}
+
+void DataSetTableModel::setColumnName(int col, QString name) const
+{
+	return DataSetPackage::pkg()->setColumnName(col, fq(name));
+}
+
+void DataSetTableModel::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString> > & cells)
+{
+	QModelIndex idx = mapToSource(index(row, col));
+	DataSetPackage::pkg()->pasteSpreadsheet(idx.row(), idx.column(), cells);
 }
