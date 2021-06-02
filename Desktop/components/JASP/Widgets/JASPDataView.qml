@@ -74,20 +74,35 @@ FocusScope
 	}
 	
 	
-	Keys.onPressed:			
-		if(event.modifiers & Qt.ControlModifier)
+	Keys.onPressed:
+	{
+		var controlPressed	= Boolean(event.modifiers & Qt.ControlModifier);
+		var shiftPressed	= Boolean(event.modifiers & Qt.ShiftModifier  );
+
+		if(controlPressed)
 			switch(event.key)
 			{
 			case Qt.Key_C:
-				theView.copy();
+				theView.copy(shiftPressed);
 				event.accepted = true;
 				break;
-				
-			case Qt.Key_V:
+
+			case Qt.Key_X:
+				theView.cut(shiftPressed);
 				event.accepted = true;
-				theView.paste();
+				break;
+
+			case Qt.Key_V:
+				theView.paste(shiftPressed);
+				event.accepted = true;
+				break;
+
+			case Qt.Key_A:
+					theView.selectAll();
+					event.accepted = true;
 				break;
 			}
+	}
 
 	Flickable
 	{
@@ -206,8 +221,6 @@ FocusScope
 			else
 				wheel.accepted = false;
 		}
-
-
 	}
 
 

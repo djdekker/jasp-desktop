@@ -1002,9 +1002,15 @@ void DataSetView::setSelectionEnd(QModelIndex selectionEnd)
 	_selectionEnd = _model->index(selectionEnd.row(), selectionEnd.column());;
 	emit selectionEndChanged(_selectionEnd);
 	
-	_selectionModel->select(QItemSelection(_selectionStart, _selectionEnd), QItemSelectionModel::ClearAndSelect);
+	_selectionModel->select(QItemSelection(_model->index(_selectionStart.row(), _selectionStart.column()), _selectionEnd), QItemSelectionModel::ClearAndSelect);
 	
 	_selectScrollMs = Utils::currentMillis();
+}
+
+void DataSetView::selectAll()
+{
+	setSelectionStart(_model->index(0, 0));
+	setSelectionEnd(_model->index(_model->rowCount() - 1, _model->columnCount() - 1));
 }
 
 
@@ -1055,22 +1061,25 @@ void DataSetView::pollSelectScroll(QModelIndex mouseIndex)
 }
 
 
-void DataSetView::copy()
+
+
+void DataSetView::_copy(bool includeHeader, bool clear)
 {
 	QModelIndexList selected = _selectionModel->selectedIndexes();
 	
-	QStringList					all;
 	std::vector<QStringList>	rows;
-	
+
+	int minCol = _model->columnCount(), maxCol = 0;
+
+
 	int previousRow = -1;
 	for(const QModelIndex & selectee : selected) //How do I know this is the right order? Random SO post. It does however seem to work and it would be surprising for it to suddenly change.
 	{
 		if(selectee.row() != previousRow)
-		{
-			if(rows.size() > 0)
-				all.append(rows[ rows.size()-1 ].join("\t"));
 			rows.push_back({});
-		}
+
+		minCol = std::min(minCol, selectee.column());
+		maxCol = std::max(maxCol, selectee.column());
 		
 		QVariant valVar = _model->data(selectee);
 		std::string val = fq(valVar.toString());
@@ -1082,15 +1091,88 @@ void DataSetView::copy()
 		previousRow = selectee.row();
 	}
 
+	int rowsSelected = rows.size();
+
+	if(includeHeader)
+	{
+		rows.insert(rows.begin(), tql(std::vector<std::string>(maxCol - minCol + 1, "")));
+		for(int c=minCol; c<=maxCol; c++)
+			rows[0][c-minCol] = _model->headerData(c, Qt::Horizontal).toString();
+	}
+
 	if(rows.size() == 0)
 		return; //Nothing to copy
 	
-	all.append(rows[ rows.size()-1 ].join("\t"));
+	QStringList	all;
+	for(const auto & row : rows)
+		all.append(row.join("\t"));
 	QString copyThis = all.join("\n");
 	
 	//Log::log() << "copying:\n" << copyThis << "\nThats it" << std::endl;
 	
 	QGuiApplication::clipboard()->setText(copyThis);
+
+	if(clear && qobject_cast<DataSetTableModel*>(_model) != nullptr)
+	{
+		QModelIndex topLeft = selectionTopLeft();
+
+		Log::log() << "DataSetView about to clear at row: " << topLeft.row() << " and col: " << topLeft.column() << std::endl;
+		qobject_cast<DataSetTableModel*>(_model)->pasteSpreadsheet(
+					topLeft.row(),
+					topLeft.column(),
+					std::vector<std::vector<QString>>(
+						(maxCol - minCol) + 1,
+						std::vector<QString>(
+							rowsSelected,
+							""
+						)
+					)
+		);
+	}
+}
+
+void DataSetView::paste(bool includeHeader)
+{
+	QClipboard * clipboard = QGuiApplication::clipboard();
+
+	std::vector<std::vector<QString>> newData;
+
+	QStringList newNames;
+
+	size_t row = 0, col = 0;
+	for(const QString & rowStr : clipboard->text().split("\n"))
+	{
+		col = 0;
+		if(rowStr != "")
+		{
+			if(includeHeader)
+			{
+				newNames = rowStr.split("\t");
+				includeHeader = false;
+			}
+			else
+			{
+				for(const QString & cellStr : rowStr.split("\t"))
+				{
+					if(newData.size()		<= col) newData.	 resize(col+1);
+					if(newData[col].size()	<= row)	newData[col].resize(row+1);
+
+					newData[col][row] = cellStr;
+					col++;
+				}
+				row++;
+			}
+		}
+	}
+
+	if(qobject_cast<DataSetTableModel*>(_model) != nullptr)
+	{
+		QModelIndex topLeft = selectionTopLeft();
+
+		Log::log() << "DataSetView about to paste to data at row: " << topLeft.row() << " and col: " << topLeft.column() << std::endl;
+
+		qobject_cast<DataSetTableModel*>(_model)->pasteSpreadsheet(topLeft.row(), topLeft.column(), newData, newNames);
+	}
 }
 
 QModelIndex DataSetView::selectionTopLeft() const
@@ -1108,37 +1190,6 @@ QModelIndex DataSetView::selectionTopLeft() const
 	if(c == INT_MAX)	c = 0;
 	
 	return _model->index(r, c);
-}
-
-void DataSetView::paste()
-{
-	QClipboard * clipboard = QGuiApplication::clipboard();
-	
-	std::vector<std::vector<QString>> newData;
-	
-	size_t row = 0, col = 0;
-	for(const QString & rowStr : clipboard->text().split("\n"))
-	{
-		col = 0;
-		if(rowStr != "")
-			for(const QString & cellStr : rowStr.split("\t"))
-			{
-				if(newData.size()		<= col) newData.	 resize(col+1);
-				if(newData[col].size()	<= row)	newData[col].resize(row+1);
-				
-				newData[col][row] = cellStr;
-				col++;
-			}
-		row++;
-	}
-		
-	if(qobject_cast<DataSetTableModel*>(_model) != nullptr)
-	{
-		QModelIndex topLeft = selectionTopLeft();
-
-		Log::log() << "DataSetView about to paste to data at row: " << topLeft.row() << " and col: " << topLeft.column() << std::endl;
-		qobject_cast<DataSetTableModel*>(_model)->pasteSpreadsheet(topLeft.row(), topLeft.column(), newData);
-	}
 }
 
 void DataSetView::setEditDelegate(QQmlComponent *editDelegate)
@@ -1212,6 +1263,12 @@ void DataSetView::onDataModeChanged(bool dataMode)
 		destroyEditItem();
 		setEditing(false);
 	}
+}
+
+void DataSetView::contextMenuClickedAtIndex(QModelIndex index)
+{
+	if(!_selectionModel->isSelected(index))
+		_selectionModel->select(index, QItemSelectionModel::SelectCurrent);
 }
 
 QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool active, size_t col, size_t row)

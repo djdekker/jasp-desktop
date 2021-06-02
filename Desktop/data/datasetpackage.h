@@ -179,7 +179,7 @@ public:
 				std::map<int, std::string>	initColumnAsNominalText(		std::string colName,	std::string newName, const std::vector<std::string>	& values,	const std::map<std::string, std::string> & labels = std::map<std::string, std::string>())	{ return initColumnAsNominalText(_dataSet->getColumnIndex(colName), newName, values, labels); }
 				std::map<int, std::string>	initColumnAsNominalText(		QVariant colID,			std::string newName, const std::vector<std::string>	& values,	const std::map<std::string, std::string> & labels = std::map<std::string, std::string>());
 				
-				void						pasteSpreadsheet(size_t row, size_t column, const std::vector<std::vector<QString>> & cells);
+				void						pasteSpreadsheet(size_t row, size_t column, const std::vector<std::vector<QString>> & cells, QStringList newColNames = QStringList());
 
 				void						columnSetDefaultValues(std::string columnName, columnType colType = columnType::unknown);
 				bool						createColumn(std::string name, columnType colType);
@@ -228,6 +228,7 @@ public:
 				size_t						getMaximumColumnWidthInCharacters(int columnIndex) const;
 				QStringList					getColumnLabelsAsStringList(std::string columnName)		const;
 				QStringList					getColumnLabelsAsStringList(size_t columnIndex)			const;
+				void						unicifyColumnNames();
 
 				bool						setFilterData(std::string filter, std::vector<bool> filterResult);
 				void						resetFilterAllows(size_t columnIndex);
@@ -240,7 +241,7 @@ public:
 				std::vector<bool>			filterVector();
 				void						setFilterVectorWithoutModelUpdate(std::vector<bool> newFilterVector) { if(_dataSet) _dataSet->setFilterVector(newFilterVector); }
 
-				bool synchingExternally() const;
+				bool						synchingExternally() const;
 
 signals:
 				void				datasetChanged(	QStringList				changedColumns,

@@ -174,14 +174,18 @@ public slots:
 	void		setEditing(bool shiftSelectActive);
 	bool		relaxForSelectScroll();
 	QModelIndex selectionTopLeft() const;
-	void		copy();
-	void		paste();
+	void		cut(	bool includeHeader = false) { _copy(includeHeader, true);  }
+	void		copy(	bool includeHeader = false) { _copy(includeHeader, false); }
+	void		paste(	bool includeHeader = false);
+	void		selectAll();
 	void		edit(QModelIndex here);
 	void		destroyEditItem();
 	void		editFinished(QModelIndex here, QVariant  editedValue);
 	void		onDataModeChanged(bool dataMode);
+	void		contextMenuClickedAtIndex(QModelIndex index);
 	
 protected:
+	void		_copy(bool includeHeader, bool clear);
 	void		calculateCellSizesAndClear(bool clearStorage);
 	void		setRolenames();
 	void		determineCurrentViewPortIndices();

@@ -56,7 +56,8 @@ public:
 	size_t					getMaximumColumnWidthInCharacters(int index) const			{ return DataSetPackage::pkg()->getMaximumColumnWidthInCharacters(index);			}
 	QModelIndex				parentModelForType(parIdxType type, int column = 0)	const	{ return DataSetPackage::pkg()->parentModelForType(type, column);					}
 	bool					synchingData()							const				{ return DataSetPackage::pkg()->synchingData();										}
-	void					pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & cells);
+
+	void					pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & cells, QStringList newColNames = QStringList());
 
 				bool		showInactive()							const				{ return _showInactive;	}
 

@@ -1512,6 +1512,22 @@ std::string DataSetPackage::freeNewColumnName(size_t startHere)
 	}
 }
 
+void DataSetPackage::unicifyColumnNames()
+{
+	for(int c=0; c<columnCount(); c++)
+	{
+		std::string name = getColumnName(c);
+
+		for(int c1=c+1; c1<columnCount(); c1++)
+			if(getColumnName(c1) == name)
+			{
+				std::string newName = name + "'";
+				while(!isColumnNameFree(newName))
+					newName = newName + "'";
+				setColumnName(c1, newName);
+			}
+	}
+}
 
 void DataSetPackage::resizeData(size_t rows, size_t cols)
 {
@@ -1550,18 +1566,24 @@ void DataSetPackage::resizeData(size_t rows, size_t cols)
 
 }
 
-void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & cells)
+void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & cells, QStringList newColNames)
 {
 	int		rowMax			= ( cells.size() > 0 ? cells[0].size() : 0), 
 			colMax			= cells.size();
 	bool	rowCountChanged = int(row + rowMax) > rowCount()	,
 			colCountChanged = int(col + colMax) > columnCount()	;
 	
+	setSynchingExternally(false); //Don't synch with external file after editing
+
 	//beginResetModel();
 	beginSynchingData(false);
 	
 	if(colCountChanged || rowCountChanged)	
 		setDataSetSize(std::max(size_t(columnCount()), colMax + col), std::max(size_t(rowCount()), rowMax + row));
+
+
+
+	stringvec colNames = getColumnNames(false);
 	
 	std::vector<std::string> changed;
 
@@ -1576,16 +1598,33 @@ void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<
 			colVals[r + row] = cellVal;
 		}
 
-		std::string colName = getColumnName(dataCol);
+		std::string colName = getColumnName(dataCol),
+					newName = newColNames.size() > c && newColNames[c] != "" ? fq(newColNames[c]) : colName == "" ? freeNewColumnName(dataCol) : colName;
 		
-		initColumnWithStrings(dataCol, colName == "" ? freeNewColumnName(dataCol) : colName, colVals);
+		initColumnWithStrings(dataCol, newName, colVals);
 
 		if(colName != "")
-			changed.push_back(colName);
+			changed.push_back(newName);
+
+	}
+
+	std::map<std::string, std::string>		changeNameColumns;
+	if(newColNames.size() > 0)
+	{
+		unicifyColumnNames();
+
+		stringvec colNamesNew = getColumnNames(false);
+
+		for(size_t i=0; i<colNames.size() && i < colNamesNew.size(); i++)
+			if(colNames[i] != colNamesNew[i])
+				changeNameColumns[colNames[i]] = colNamesNew[i];
 	}
 	
-	
-	endSynchingDataChangedColumns(changed, colCountChanged, false);
+
+	std::vector<std::string>				missingColumns;
+
+
+   endSynchingData(changed, missingColumns, changeNameColumns, colCountChanged, false);
 
 	if(isLoaded()) setModified(true);
 }

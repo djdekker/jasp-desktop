@@ -64,8 +64,8 @@ void DataSetTableModel::setColumnName(int col, QString name) const
 	return DataSetPackage::pkg()->setColumnName(col, fq(name));
 }
 
-void DataSetTableModel::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString> > & cells)
+void DataSetTableModel::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString> > & cells, QStringList newColNames)
 {
 	QModelIndex idx = mapToSource(index(row, col));
-	DataSetPackage::pkg()->pasteSpreadsheet(idx.row(), idx.column(), cells);
+	DataSetPackage::pkg()->pasteSpreadsheet(idx.row(), idx.column(), cells, newColNames);
 }
