@@ -69,3 +69,27 @@ void DataSetTableModel::pasteSpreadsheet(size_t row, size_t col, const std::vect
 	QModelIndex idx = mapToSource(index(row, col));
 	DataSetPackage::pkg()->pasteSpreadsheet(idx.row(), idx.column(), cells, newColNames);
 }
+
+void DataSetTableModel::columnInsert(size_t column)
+{
+	QModelIndex idx = mapToSource(index(0, column));
+	DataSetPackage::pkg()->columnInsert(idx.column());
+}
+
+void DataSetTableModel::columnDelete(size_t column)
+{
+	QModelIndex idx = mapToSource(index(0, column));
+	DataSetPackage::pkg()->columnDelete(idx.column());
+}
+
+void DataSetTableModel::rowInsert(size_t row)
+{
+	QModelIndex idx = mapToSource(index(row, 0));
+	DataSetPackage::pkg()->rowInsert(idx.row());
+}
+
+void DataSetTableModel::rowDelete(size_t row)
+{
+	QModelIndex idx = mapToSource(index(row, 0));
+	DataSetPackage::pkg()->rowDelete(idx.row());
+}

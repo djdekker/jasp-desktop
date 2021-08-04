@@ -59,9 +59,24 @@ FocusScope
 
 							"---", //Works but is ugly:  + qsTr("Including header:"),
 
-							qsTr("Header Cut      (%1+Shift+X)").arg(ctrlCmd),
-							qsTr("Header Copy     (%1+Shift+C)").arg(ctrlCmd),
-							qsTr("Header Paste    (%1+Shift+V)").arg(ctrlCmd),
+							qsTr("Header cut      (%1+Shift+X)").arg(ctrlCmd),
+							qsTr("Header copy     (%1+Shift+C)").arg(ctrlCmd),
+							qsTr("Header paste    (%1+Shift+V)").arg(ctrlCmd),
+
+							"---",
+
+							qsTr("Select column"),
+							qsTr("Insert column before"),
+							qsTr("Insert column after"),
+							qsTr("Delete column"),
+
+							"---",
+
+							qsTr("Select row"),
+							qsTr("Insert row before"),
+							qsTr("Insert row after"),
+							qsTr("Delete row"),
+
 				]
 
 				var copyPasteMenuFunctions =
@@ -78,7 +93,21 @@ FocusScope
 
 						function() { dataTableView.view.cut(  true )},
 						function() { dataTableView.view.copy( true )},
-						function() { dataTableView.view.paste(true )}
+						function() { dataTableView.view.paste(true )},
+
+						function (){},
+
+						function() { dataTableView.view.columnSelect(		indexClicked.column) },
+						function() { dataTableView.view.columnInsertBefore(	indexClicked.column) },
+						function() { dataTableView.view.columnInsertAfter(	indexClicked.column) },
+						function() { dataTableView.view.columnDelete(		indexClicked.column) },
+
+						function (){},
+
+						function() { dataTableView.view.rowSelect(			indexClicked.row) },
+						function() { dataTableView.view.rowInsertBefore(	indexClicked.row) },
+						function() { dataTableView.view.rowInsertAfter(		indexClicked.row) },
+						function() { dataTableView.view.rowDelete(			indexClicked.row) }
 
 				]
 
@@ -88,7 +117,7 @@ FocusScope
 					{
 						var chosenElement = copyPasteMenuModel[index];
 
-						console.log("Option " + chosenElement + " chosen, running function.");
+					//	console.log("Option " + chosenElement + " chosen, running function.");
 
 						copyPasteMenuFunctions[index]();
 

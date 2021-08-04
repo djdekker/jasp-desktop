@@ -106,15 +106,6 @@ signals:
 				void startExternalEdit();
 				void stopExternalEdit();
 
-				void rowInsert();
-				void rowAppend();
-				void rowPrepend();
-				void rowEraseCur();
-				void colEraseCur();
-				void colPrepend();
-				void colInsert();
-				void colAppend();
-
 				void resizeData();
 				void finishCurrentEdit();
 

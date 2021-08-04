@@ -377,14 +377,6 @@ void MainWindow::makeConnections()
 	connect(_ribbonModel,			&RibbonModel::showRCommander,						this,					&MainWindow::showRCommander									);
 	connect(_ribbonModel,			&RibbonModel::generateEmptyData,					_package,				&DataSetPackage::generateEmptyData							);
 	connect(_ribbonModel,			&RibbonModel::dataModeChanged,						_package,				&DataSetPackage::dataModeChanged							);
-	connect(_ribbonModel,			&RibbonModel::rowInsert,							_package,				&DataSetPackage::rowInsert									);
-	connect(_ribbonModel,			&RibbonModel::rowAppend,							_package,				&DataSetPackage::rowAppend									);
-	connect(_ribbonModel,			&RibbonModel::rowPrepend,							_package,				&DataSetPackage::rowPrepend									);
-	connect(_ribbonModel,			&RibbonModel::rowEraseCur,							_package,				&DataSetPackage::rowEraseCur								);
-	connect(_ribbonModel,			&RibbonModel::colEraseCur,							_package,				&DataSetPackage::colEraseCur								);
-	connect(_ribbonModel,			&RibbonModel::colPrepend,							_package,				&DataSetPackage::colPrepend									);
-	connect(_ribbonModel,			&RibbonModel::colInsert,							_package,				&DataSetPackage::colInsert									);
-	connect(_ribbonModel,			&RibbonModel::colAppend,							_package,				&DataSetPackage::colAppend									);
 
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleUnloadBegin,			_analyses,				&Analyses::removeAnalysesOfDynamicModule					);
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleChanged,				_analyses,				&Analyses::refreshAnalysesOfDynamicModule					);

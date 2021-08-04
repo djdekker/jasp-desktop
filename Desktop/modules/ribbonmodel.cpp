@@ -109,23 +109,6 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 	addRibbonButtonModel(	new RibbonButton(this, "Analyses",		fq(tr("Analyses")),			"JASP_logo_green.svg",		false, [&](){ emit finishCurrentEdit(); emit showStatistics(); },	fq(tr("Switch JASP to analyses mode")),			true),			size_t(RowType::Data)		);
 
 
-	/*Modules::AnalysisEntries	* insertDataEntries = new Modules::AnalysisEntries(),
-								* eraseDataEntries	= new Modules::AnalysisEntries();
-
-
-	insertDataEntries->push_back(new Modules::AnalysisEntry(nullptr, fq(tr("Columns"))));
-	insertDataEntries->push_back(new Modules::AnalysisEntry([&](){ emit colInsert();  }, fq(tr("Insert"))));
-	insertDataEntries->push_back(new Modules::AnalysisEntry([&](){ emit colPrepend(); }, fq(tr("Prepend"))));
-	insertDataEntries->push_back(new Modules::AnalysisEntry([&](){ emit colAppend();  }, fq(tr("Append"))));
-
-	insertDataEntries->push_back(new Modules::AnalysisEntry(nullptr, fq(tr("Rows"))));
-	insertDataEntries->push_back(new Modules::AnalysisEntry([&](){ emit rowInsert();  }, fq(tr("Insert"))));
-	insertDataEntries->push_back(new Modules::AnalysisEntry([&](){ emit rowPrepend(); }, fq(tr("Prepend"))));
-	insertDataEntries->push_back(new Modules::AnalysisEntry([&](){ emit rowAppend();  }, fq(tr("Append"))));
-
-	eraseDataEntries->push_back(new Modules::AnalysisEntry([&](){ emit colEraseCur();  }, fq(tr("Erase column"))));
-	eraseDataEntries->push_back(new Modules::AnalysisEntry([&](){ emit rowEraseCur();  }, fq(tr("Erase row"))));
-	*/
 	auto * newData		=	new RibbonButton(this, "Data-New",		fq(tr("New Data")),			"data-button-new.svg",		false, [&](){ emit genShowEmptyData();  emit resizeData(); },			fq(tr("Open a workspace without data")),			true);
 	//auto * insertData	=	new RibbonButton(this, "Data-Insert",	fq(tr("Insert")),			"data-button-insert.svg",	insertDataEntries,														fq(tr("")),											false);
 	//auto * eraseData	=	new RibbonButton(this, "Data-Erase",	fq(tr("Erase")),			"data-button-erase.svg",	eraseDataEntries,														fq(tr("")),											false);

@@ -1192,6 +1192,53 @@ QModelIndex DataSetView::selectionTopLeft() const
 	return _model->index(r, c);
 }
 
+
+void DataSetView::columnSelect(int col)
+{
+	setSelectionStart(_model->index(0, col));
+	setSelectionEnd(_model->index(_model->rowCount() - 1, col));
+}
+
+void DataSetView::columnInsertBefore(int col)
+{
+	if(qobject_cast<DataSetTableModel*>(_model) != nullptr)
+		qobject_cast<DataSetTableModel*>(_model)->columnInsert(col);
+}
+
+void DataSetView::columnInsertAfter(int col)
+{
+	columnInsertBefore(col + 1);
+}
+
+void DataSetView::columnDelete(int col)
+{
+	if(qobject_cast<DataSetTableModel*>(_model) != nullptr)
+		qobject_cast<DataSetTableModel*>(_model)->columnDelete(col);
+}
+
+void DataSetView::rowSelect(int row)
+{
+	setSelectionStart(_model->index(row, 0));
+	setSelectionEnd(_model->index(row, _model->columnCount() - 1));
+}
+
+void DataSetView::rowInsertBefore(int row)
+{
+	if(qobject_cast<DataSetTableModel*>(_model) != nullptr)
+		qobject_cast<DataSetTableModel*>(_model)->rowInsert(row);
+}
+
+void DataSetView::rowInsertAfter(int row)
+{
+	rowInsertBefore(row + 1);
+}
+
+void DataSetView::rowDelete(int row)
+{
+	if(qobject_cast<DataSetTableModel*>(_model) != nullptr)
+		qobject_cast<DataSetTableModel*>(_model)->rowDelete(row);
+}
+
 void DataSetView::setEditDelegate(QQmlComponent *editDelegate)
 {
 	if (_editDelegate == editDelegate)

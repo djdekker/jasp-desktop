@@ -180,6 +180,10 @@ public:
 				std::map<int, std::string>	initColumnAsNominalText(		QVariant colID,			std::string newName, const std::vector<std::string>	& values,	const std::map<std::string, std::string> & labels = std::map<std::string, std::string>());
 				
 				void						pasteSpreadsheet(size_t row, size_t column, const std::vector<std::vector<QString>> & cells, QStringList newColNames = QStringList());
+				void						columnInsert(	size_t column	); //Maybe these  functions should be made to depend on "columnInsert" etc from AbstractItemModel
+				void						columnDelete(	size_t column	);
+				void						rowInsert(		size_t row		);
+				void						rowDelete(		size_t row		);
 
 				void						columnSetDefaultValues(std::string columnName, columnType colType = columnType::unknown);
 				bool						createColumn(std::string name, columnType colType);
@@ -290,15 +294,7 @@ public slots:
 				void				generateEmptyData();
 				void				logDataModeChanged(bool dataMode);
 
-				void				rowInsert();
-				void				rowAppend();
-				void				rowPrepend();
-				void				rowEraseCur();
-				void				colEraseCur();
-				void				colPrepend();
-				void				colInsert();
-				void				colAppend();
-				
+			
 				void setSynchingExternally(bool synchingExternally);
 
 private:

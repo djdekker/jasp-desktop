@@ -14,7 +14,7 @@
 #include "gui/preferencesmodel.h"
 
 #include <QItemSelectionModel>
-
+#include <QItemSelection>
 
 //#define DATASETVIEW_DEBUG_VIEWPORT
 //#define DATASETVIEW_DEBUG_CREATION
@@ -174,10 +174,22 @@ public slots:
 	void		setEditing(bool shiftSelectActive);
 	bool		relaxForSelectScroll();
 	QModelIndex selectionTopLeft() const;
+
 	void		cut(	bool includeHeader = false) { _copy(includeHeader, true);  }
 	void		copy(	bool includeHeader = false) { _copy(includeHeader, false); }
 	void		paste(	bool includeHeader = false);
+
+	void		columnSelect(		int col);
+	void		columnInsertBefore(	int col);
+	void		columnInsertAfter(	int col);
+	void		columnDelete(		int col);
+	void		rowSelect(			int row);
+	void		rowInsertBefore(	int row);
+	void		rowInsertAfter(		int row);
+	void		rowDelete(			int row);
+
 	void		selectAll();
+
 	void		edit(QModelIndex here);
 	void		destroyEditItem();
 	void		editFinished(QModelIndex here, QVariant  editedValue);

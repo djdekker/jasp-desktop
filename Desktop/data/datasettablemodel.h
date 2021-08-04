@@ -58,6 +58,10 @@ public:
 	bool					synchingData()							const				{ return DataSetPackage::pkg()->synchingData();										}
 
 	void					pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & cells, QStringList newColNames = QStringList());
+	void					columnInsert(	size_t column	);
+	void					columnDelete(	size_t column	);
+	void					rowInsert(		size_t row		);
+	void					rowDelete(		size_t row		);
 
 				bool		showInactive()							const				{ return _showInactive;	}
 

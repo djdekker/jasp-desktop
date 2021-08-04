@@ -90,6 +90,13 @@ void Columns::removeColumn(std::string name)
 		}
 }
 
+void Columns::insertColumn(size_t index)
+{
+	auto c = Column(_mem);
+	c._setRowCount(maxRowCount());
+	_columnStore.insert(_columnStore.begin() + index, c);
+}
+
 
 void Columns::setSharedMemory(boost::interprocess::managed_shared_memory *mem)
 {
